@@ -11,7 +11,7 @@ var cc = 0;
 var hh = null;
 export function activate(context: ExtensionContext) {
     const status = window.createStatusBarItem(StatusBarAlignment.Right, 100);
-    status.command = 'extension.picoscell.about';
+    status.command = 'extension.4x0v7.about';
     context.subscriptions.push(status);
 
     /*
@@ -22,12 +22,12 @@ export function activate(context: ExtensionContext) {
     context.subscriptions.push(workspace.onDidCloseTextDocument(e => updateStatus(status)));
     */
 
-    context.subscriptions.push(commands.registerCommand('extension.picoscell.toggleNrtxm', () => {
+    context.subscriptions.push(commands.registerCommand('extension.4x0v7.toggleNrtxm', () => {
       toggleNrtxm(status);
     }));
     
-    context.subscriptions.push(commands.registerCommand('extension.picoscell.about', () => {
-      window.showInformationMessage('Hello Picoscell Research');
+    context.subscriptions.push(commands.registerCommand('extension.4x0v7.about', () => {
+      window.showInformationMessage('Hello 4x0v7 Research');
     }));
 
     console.log('activated');
@@ -46,7 +46,7 @@ function toggleNrtxm(status) {
   }
 }
 
-function convert(v, cb) {
+function convert(v: number, cb: { (v: number, unit: string, emoji: string): void; (v: number, unit: string, emoji: string): void; (arg0: number, arg1: string, arg2: string): void; }) {
     v = Math.floor(v);
     let kb = 1024;
     let mb = 1024 * 1024;
@@ -64,7 +64,7 @@ function convert(v, cb) {
 
 function updateStatus(status: StatusBarItem): void {
     let rateLine = '';
-    si.networkStats(function (data) {
+    si.networkStats().then(data => {
         /*
         convert(data.rx, function (v, unit) {
             rateLine = 'RX ' + v + ' ' + unit;
@@ -74,11 +74,11 @@ function updateStatus(status: StatusBarItem): void {
             rateLine += 'TX ' + v + ' ' + unit;
         });
         */
-        convert(data.rx_sec, function (v, unit, emoji) {
+        convert(data[0].rx_sec, function (v: number, unit: string, emoji: string) {
             rateLine += ' ';
             rateLine += 'RX ' + emoji + ' ' + v + ' ' + unit + '/S';
         });
-        convert(data.tx_sec, function (v, unit, emoji) {
+        convert(data[0].tx_sec, function (v: number, unit: string, emoji: string) {
             rateLine += ' ';
             rateLine += 'TX ' + emoji + ' ' + v + ' ' + unit + '/S';
         });
@@ -86,7 +86,7 @@ function updateStatus(status: StatusBarItem): void {
     });
 
 }
-function updateText(text, status) {
+function updateText(text: string, status: StatusBarItem) {
     if (text) {
         //status.text = '$(megaphone) ' + ' ' + emoji[i % 3] + ' ' + text[i];
         status.text = text;
